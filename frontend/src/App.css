@@ -1,0 +1,2807 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f4f7fb;
+  color: #172033;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  transition: all 0.2s ease;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header {
+  background: #ffffff;
+  border-bottom: 1px solid #e3e8f0;
+  padding: 20px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #1457d9;
+}
+
+.header p {
+  margin: 5px 0 0;
+  color: #718096;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #a0aec0;
+}
+
+.status-dot.active {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+/* =========================================================
+   MAIN FACE SCANNER
+========================================================= */
+
+.main {
+  width: 90%;
+  max-width: 1400px;
+  margin: 35px auto;
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 25px;
+}
+
+.scanner-card,
+.result-card {
+  background: #ffffff;
+  border: 1px solid #e3e8f0;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 8px 30px rgba(30, 50, 80, 0.06);
+}
+
+.scanner-header h2,
+.result-card h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.scanner-header p {
+  color: #718096;
+  margin-top: 7px;
+}
+
+.camera-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin-top: 20px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #101827;
+}
+
+.camera {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #101827;
+}
+
+.camera.visible {
+  display: block;
+}
+
+.camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.camera-placeholder h3 {
+  margin: 10px 0 5px;
+}
+
+.camera-placeholder p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.camera-icon {
+  font-size: 45px;
+}
+
+.face-frame {
+  position: absolute;
+  width: 42%;
+  height: 72%;
+  top: 14%;
+  left: 29%;
+  border-radius: 45%;
+  pointer-events: none;
+}
+
+.corner {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  border-color: #3b82f6;
+  border-style: solid;
+}
+
+.top-left {
+  top: 0;
+  left: 0;
+  border-width: 4px 0 0 4px;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+  border-width: 4px 4px 0 0;
+}
+
+.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 4px 4px;
+}
+
+.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-width: 0 4px 4px 0;
+}
+
+.scan-line {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 12px #38bdf8;
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    top: 5%;
+  }
+
+  50% {
+    top: 95%;
+  }
+
+  100% {
+    top: 5%;
+  }
+}
+
+.scanning-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  gap: 15px;
+  font-weight: 600;
+}
+
+.loader {
+  width: 45px;
+  height: 45px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.primary-button,
+.secondary-button {
+  border: none;
+  padding: 12px 22px;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: #1457d9;
+  color: white;
+}
+
+.primary-button:hover {
+  background: #0f46b4;
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondary-button {
+  background: #edf2f7;
+  color: #334155;
+}
+
+.secondary-button:hover {
+  background: #e2e8f0;
+}
+
+.hidden-canvas {
+  display: none;
+}
+
+.error-message {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff1f2;
+  color: #be123c;
+  font-size: 14px;
+}
+
+/* =========================================================
+   RESULT CARD
+========================================================= */
+
+.result-card {
+  min-height: 500px;
+}
+
+.empty-result {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #64748b;
+}
+
+.empty-result h3 {
+  color: #334155;
+  margin-bottom: 5px;
+}
+
+.empty-result p {
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+.result-icon {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #64748b;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.recognized {
+  margin-top: 25px;
+}
+
+.success-badge {
+  display: inline-block;
+  padding: 8px 13px;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.employee-profile {
+  text-align: center;
+  margin: 25px 0;
+}
+
+.avatar {
+  width: 85px;
+  height: 85px;
+  margin: auto;
+  border-radius: 50%;
+  background: #1457d9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 35px;
+  font-weight: 700;
+}
+
+.employee-profile h3 {
+  margin: 12px 0 4px;
+  font-size: 22px;
+}
+
+.designation {
+  color: #64748b;
+  margin: 0;
+}
+
+.employee-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.employee-info > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.employee-info span {
+  color: #64748b;
+}
+
+.employee-info strong {
+  text-align: right;
+  max-width: 60%;
+  overflow-wrap: anywhere;
+}
+
+.not-recognized {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.warning-icon {
+  width: 65px;
+  height: 65px;
+  margin: auto;
+  border-radius: 50%;
+  background: #fef3c7;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.not-recognized h3 {
+  margin-bottom: 8px;
+}
+
+.not-recognized p {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+  margin-top: auto;
+  padding: 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* =========================================================
+   LOGIN PAGE
+========================================================= */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f4f7fb;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 42px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-logo .logo-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #2563eb;
+  color: white;
+  font-size: 28px;
+}
+
+.login-logo h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 30px;
+}
+
+.login-logo p {
+  margin-top: 8px;
+  color: #64748b;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.login-button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background: #1d4ed8;
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-error {
+  margin-bottom: 18px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 14px;
+}
+
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* =========================================================
+   FACE AUTHENTICATION PAGE
+========================================================= */
+
+.auth-main {
+  width: 90%;
+  max-width: 900px;
+  margin: 35px auto;
+  flex: 1;
+}
+
+.face-auth-card {
+  background: #ffffff;
+  border: 1px solid #e3e8f0;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 8px 30px rgba(30, 50, 80, 0.06);
+}
+
+.face-auth-header {
+  margin-bottom: 20px;
+}
+
+.face-auth-header h2 {
+  margin: 0;
+  font-size: 26px;
+  color: #172033;
+}
+
+.face-auth-header p {
+  margin-top: 8px;
+  color: #718096;
+}
+
+.auth-camera-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin-top: 20px;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #101827;
+}
+
+.auth-camera-container .camera {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.auth-camera-container .camera.visible {
+  display: block;
+}
+
+.auth-camera-container .camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.auth-camera-container .camera-placeholder h3 {
+  margin: 10px 0 5px;
+  color: #cbd5e1;
+}
+
+.auth-camera-container .camera-placeholder p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.auth-icon {
+  color: #1457d9;
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 25px 0 15px;
+  color: #94a3b8;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.auth-divider span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.login-switch-button {
+  width: 100%;
+  padding: 12px 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: white;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-switch-button:hover {
+  background: #f8fafc;
+}
+
+.security-note {
+  margin-top: 18px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.password-auth-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-to-face-button {
+  border: none;
+  background: transparent;
+  color: #1457d9;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-to-face-button:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.admin-dashboard {
+  width: 90%;
+  max-width: 1400px;
+  margin: 35px auto 50px;
+}
+
+/* Dashboard Header */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 30px;
+  color: #172033;
+}
+
+.dashboard-header p {
+  margin: 7px 0 0;
+  color: #718096;
+}
+
+.refresh-button {
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #334155;
+  padding: 11px 18px;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.refresh-button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* =========================================================
+   ADMIN STATISTICS
+========================================================= */
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e3e8f0;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 8px 25px rgba(30, 50, 80, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(30, 50, 80, 0.08);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #edf4ff;
+  color: #1457d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.stat-card span {
+  display: block;
+  color: #718096;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 25px;
+  color: #172033;
+}
+
+/* =========================================================
+   USER MANAGEMENT
+========================================================= */
+
+.admin-users-card {
+  background: #ffffff;
+  border: 1px solid #e3e8f0;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 8px 30px rgba(30, 50, 80, 0.06);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.section-header p {
+  margin: 6px 0 0;
+  color: #718096;
+  font-size: 14px;
+}
+
+.add-user-button {
+  border: none;
+  background: #1457d9;
+  color: white;
+  padding: 11px 18px;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-user-button:hover {
+  background: #0f46b4;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   ADMIN ERROR
+========================================================= */
+
+.admin-error {
+  margin-bottom: 18px;
+  padding: 13px;
+  border-radius: 9px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  font-size: 14px;
+}
+
+.modal-error {
+  margin-top: 18px;
+}
+
+/* =========================================================
+   ADMIN LOADING
+========================================================= */
+
+.admin-loading {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #64748b;
+}
+
+.admin-spinner {
+  width: 38px;
+  height: 38px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #1457d9;
+  border-radius: 50%;
+  animation: admin-spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes admin-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   ADMIN EMPTY STATE
+========================================================= */
+
+.admin-empty {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #64748b;
+}
+
+.admin-empty-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.admin-empty h3 {
+  color: #334155;
+  margin: 5px 0;
+}
+
+.admin-empty p {
+  margin: 5px 0;
+}
+
+/* =========================================================
+   USERS TABLE
+========================================================= */
+
+.users-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1050px;
+}
+
+.users-table th {
+  text-align: left;
+  padding: 13px 12px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.users-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #edf2f7;
+  color: #334155;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.users-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   USER NAME
+========================================================= */
+
+.user-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #172033;
+}
+
+.table-avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #1457d9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* =========================================================
+   ROLE
+========================================================= */
+
+.table-role {
+  display: inline-block;
+  padding: 6px 9px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-role {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.user-role {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.table-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.active-status {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.inactive-status {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* =========================================================
+   TABLE ACTIONS
+========================================================= */
+
+.table-actions {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.table-action-button {
+  border: none;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.table-action-button:hover {
+  transform: translateY(-1px);
+}
+
+/* Register Face */
+
+.face-action {
+  background: #ecfeff;
+  color: #0e7490;
+}
+
+.face-action:hover {
+  background: #cffafe;
+}
+
+/* Edit */
+
+.edit-action {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.edit-action:hover {
+  background: #dbeafe;
+}
+
+/* Delete */
+
+.delete-action {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.delete-action:hover {
+  background: #ffe4e6;
+}
+
+/* =========================================================
+   USER MANAGEMENT MODAL
+========================================================= */
+
+.user-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 1000;
+}
+
+.user-modal {
+  width: min(720px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+  animation: modal-enter 0.2s ease-out;
+}
+
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.user-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.user-modal-header h2 {
+  margin: 0 0 6px;
+  color: #172033;
+}
+
+.user-modal-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.modal-close-button {
+  border: none;
+  background: transparent;
+  font-size: 30px;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.modal-close-button:hover {
+  color: #172033;
+}
+
+.user-form {
+  padding: 28px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.admin-form-group input,
+.admin-form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d8dee9;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #172033;
+  font-size: 14px;
+  outline: none;
+}
+
+.admin-form-group input:focus,
+.admin-form-group select:focus {
+  border-color: #4f9cf9;
+  box-shadow: 0 0 0 3px rgba(79, 156, 249, 0.12);
+}
+
+.status-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.status-checkbox input {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modal-actions .primary-button,
+.modal-actions .secondary-button {
+  min-width: 130px;
+}
+
+/* =========================================================
+   FACE REGISTRATION MODAL
+========================================================= */
+
+.face-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(15, 23, 42, 0.68);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.face-modal {
+  width: min(760px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+  animation: modal-enter 0.2s ease-out;
+}
+
+.face-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.face-modal-header h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #172033;
+}
+
+.face-modal-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.face-modal-content {
+  padding: 25px 28px 28px;
+}
+
+.face-user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  margin-bottom: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.face-user-avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #1457d9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.face-user-info h3 {
+  margin: 0 0 3px;
+  font-size: 16px;
+  color: #172033;
+}
+
+.face-user-info p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.face-camera-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  min-height: 350px;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #0f172a;
+}
+
+.face-registration-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.face-registration-frame {
+  position: absolute;
+  width: 42%;
+  height: 75%;
+  top: 12.5%;
+  left: 29%;
+  border: 2px solid rgba(56, 189, 248, 0.9);
+  border-radius: 48%;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 9999px rgba(15, 23, 42, 0.12),
+    0 0 25px rgba(56, 189, 248, 0.3);
+}
+
+.face-registration-corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-color: #38bdf8;
+  border-style: solid;
+}
+
+.face-registration-corner.top-left {
+  top: -2px;
+  left: -2px;
+  border-width: 4px 0 0 4px;
+}
+
+.face-registration-corner.top-right {
+  top: -2px;
+  right: -2px;
+  border-width: 4px 4px 0 0;
+}
+
+.face-registration-corner.bottom-left {
+  bottom: -2px;
+  left: -2px;
+  border-width: 0 0 4px 4px;
+}
+
+.face-registration-corner.bottom-right {
+  bottom: -2px;
+  right: -2px;
+  border-width: 0 4px 4px 0;
+}
+
+.face-registration-scan {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 14px #38bdf8;
+  animation: face-registration-scan 2.2s linear infinite;
+}
+
+@keyframes face-registration-scan {
+  0% {
+    top: 10%;
+  }
+
+  50% {
+    top: 90%;
+  }
+
+  100% {
+    top: 10%;
+  }
+}
+
+.face-camera-hint {
+  margin-top: 12px;
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.face-camera-hint strong {
+  color: #334155;
+}
+
+.face-error {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  font-size: 14px;
+}
+
+.face-success {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.face-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.face-register-button {
+  min-width: 150px;
+}
+
+.face-register-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    padding: 18px 5%;
+  }
+
+  .main {
+    width: 94%;
+  }
+
+  .camera-container,
+  .auth-camera-container {
+    height: 430px;
+  }
+}
+
+@media (max-width: 700px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-modal,
+  .face-modal {
+    max-height: 95vh;
+  }
+
+  .user-modal-header,
+  .user-form,
+  .face-modal-header,
+  .face-modal-content {
+    padding: 20px;
+  }
+
+  .face-camera-wrapper {
+    min-height: 280px;
+  }
+
+  .face-registration-frame {
+    width: 50%;
+    left: 25%;
+  }
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .main {
+    width: 94%;
+  }
+
+  .admin-dashboard {
+    width: 94%;
+    margin-top: 25px;
+  }
+
+  .dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .section-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-users-card {
+    padding: 18px;
+  }
+
+  .camera-container,
+  .auth-camera-container {
+    height: 350px;
+  }
+
+  .face-modal-overlay,
+  .user-modal-overlay {
+    padding: 12px;
+  }
+
+  .face-modal-actions,
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .face-modal-actions button,
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 450px) {
+  .login-card {
+    padding: 28px 20px;
+  }
+
+  .scanner-card,
+  .result-card,
+  .face-auth-card {
+    padding: 18px;
+  }
+
+  .dashboard-header h2 {
+    font-size: 25px;
+  }
+
+  .camera-container,
+  .auth-camera-container {
+    height: 300px;
+  }
+}
+
+
+/* =========================================================
+   FACE REGISTRATION MODAL
+   ========================================================= */
+
+.face-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(15, 23, 42, 0.68);
+
+  backdrop-filter: blur(5px);
+}
+
+
+.face-modal {
+  width: min(760px, 100%);
+  max-height: 94vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 30px 80px rgba(15, 23, 42, 0.28);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.face-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  padding: 22px 26px;
+
+  border-bottom: 1px solid #e8edf4;
+
+  background: #ffffff;
+}
+
+
+.face-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+
+.face-modal-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 12px;
+
+  background: #edf4ff;
+  color: #1457d9;
+
+  font-size: 22px;
+  font-weight: 700;
+}
+
+
+.face-modal-header h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 23px;
+  font-weight: 750;
+}
+
+
+.face-modal-header p {
+  margin: 4px 0 0;
+
+  color: #718096;
+
+  font-size: 14px;
+}
+
+
+.face-modal-close {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  font-size: 27px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.face-modal-close:hover {
+  background: #f1f5f9;
+  color: #172033;
+}
+
+
+.face-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   EMPLOYEE CARD
+   ========================================================= */
+
+.face-employee-card {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  margin: 18px 24px 0;
+
+  padding: 13px 15px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 13px;
+}
+
+
+.face-employee-avatar {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #1457d9;
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+
+.face-employee-details {
+  min-width: 0;
+  flex: 1;
+}
+
+
+.face-employee-name {
+  color: #172033;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  margin-bottom: 4px;
+}
+
+
+.face-employee-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+
+.face-employee-meta strong {
+  color: #475569;
+}
+
+
+.meta-separator {
+  color: #cbd5e1;
+}
+
+
+.face-account-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  flex-shrink: 0;
+
+  padding: 6px 9px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+.face-account-status.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+
+.face-account-status.inactive {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+
+.status-indicator {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.face-registration-content {
+  padding: 18px 24px 20px;
+
+  overflow-y: auto;
+}
+
+
+/* =========================================================
+   CAMERA
+   ========================================================= */
+
+.face-camera-wrapper {
+  position: relative;
+
+  width: 100%;
+
+  aspect-ratio: 16 / 9;
+
+  min-height: 300px;
+
+  max-height: 440px;
+
+  overflow: hidden;
+
+  border-radius: 15px;
+
+  background: #0f172a;
+}
+
+
+.face-registration-video {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transform: scaleX(-1);
+
+  background: #0f172a;
+}
+
+
+.face-camera-placeholder {
+  position: absolute;
+  inset: 0;
+
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  color: #cbd5e1;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(37, 99, 235, 0.08),
+      transparent 50%
+    );
+}
+
+
+.camera-placeholder-icon {
+  width: 62px;
+  height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 12px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: #60a5fa;
+
+  font-size: 28px;
+}
+
+
+.face-camera-placeholder h3 {
+  margin: 0 0 6px;
+
+  color: #f8fafc;
+
+  font-size: 17px;
+}
+
+
+.face-camera-placeholder p {
+  max-width: 350px;
+
+  margin: 0;
+
+  color: #94a3b8;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   FACE FRAME
+   ========================================================= */
+
+.registration-face-frame {
+  position: absolute;
+
+  z-index: 3;
+
+  top: 10%;
+  left: 50%;
+
+  width: 38%;
+  height: 80%;
+
+  transform: translateX(-50%);
+
+  border: 1px solid rgba(96, 165, 250, 0.25);
+
+  border-radius: 45%;
+
+  pointer-events: none;
+}
+
+
+.frame-corner {
+  position: absolute;
+
+  width: 30px;
+  height: 30px;
+
+  border-color: #3b82f6;
+
+  border-style: solid;
+
+  filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.45));
+}
+
+
+.frame-top-left {
+  top: -1px;
+  left: -1px;
+
+  border-width: 4px 0 0 4px;
+
+  border-radius: 8px 0 0 0;
+}
+
+
+.frame-top-right {
+  top: -1px;
+  right: -1px;
+
+  border-width: 4px 4px 0 0;
+
+  border-radius: 0 8px 0 0;
+}
+
+
+.frame-bottom-left {
+  bottom: -1px;
+  left: -1px;
+
+  border-width: 0 0 4px 4px;
+
+  border-radius: 0 0 0 8px;
+}
+
+
+.frame-bottom-right {
+  right: -1px;
+  bottom: -1px;
+
+  border-width: 0 4px 4px 0;
+
+  border-radius: 0 0 8px 0;
+}
+
+
+/* =========================================================
+   SCAN LINE
+   ========================================================= */
+
+.registration-scan-line {
+  position: absolute;
+
+  z-index: 4;
+
+  left: 15%;
+  right: 15%;
+
+  height: 2px;
+
+  background: #38bdf8;
+
+  box-shadow:
+    0 0 10px #38bdf8,
+    0 0 20px rgba(56, 189, 248, 0.5);
+
+  animation: registration-scan 1.8s linear infinite;
+}
+
+
+@keyframes registration-scan {
+  0% {
+    top: 15%;
+  }
+
+  50% {
+    top: 85%;
+  }
+
+  100% {
+    top: 15%;
+  }
+}
+
+
+/* =========================================================
+   PROCESSING
+   ========================================================= */
+
+.face-processing-overlay {
+  position: absolute;
+  inset: 0;
+
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  color: #ffffff;
+
+  background: rgba(15, 23, 42, 0.58);
+
+  backdrop-filter: blur(2px);
+}
+
+
+.face-processing-overlay strong {
+  font-size: 16px;
+}
+
+
+.face-processing-overlay span {
+  color: #cbd5e1;
+
+  font-size: 12px;
+}
+
+
+.face-processing-spinner {
+  width: 42px;
+  height: 42px;
+
+  margin-bottom: 6px;
+
+  border: 4px solid rgba(255, 255, 255, 0.25);
+
+  border-top-color: #ffffff;
+
+  border-radius: 50%;
+
+  animation: face-processing-spin 0.8s linear infinite;
+}
+
+
+@keyframes face-processing-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   INSTRUCTIONS
+   ========================================================= */
+
+.face-registration-instructions {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 10px;
+
+  margin-top: 14px;
+}
+
+
+.instruction-item {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  padding: 11px;
+
+  border: 1px solid #e8edf4;
+
+  border-radius: 10px;
+
+  background: #fafbfc;
+}
+
+
+.instruction-number {
+  width: 23px;
+  height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #edf4ff;
+
+  color: #1457d9;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+.instruction-item strong {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color: #334155;
+
+  font-size: 12px;
+}
+
+
+.instruction-item p {
+  margin: 0;
+
+  color: #94a3b8;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+.face-registration-error,
+.face-registration-success {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-top: 14px;
+
+  padding: 11px 13px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+}
+
+
+.face-registration-error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+}
+
+
+.face-registration-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+
+.face-registration-error > span,
+.face-registration-success > span {
+  width: 22px;
+  height: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  font-weight: 800;
+}
+
+
+.face-registration-error > span {
+  background: #ffe4e6;
+}
+
+
+.face-registration-success > span {
+  background: #dcfce7;
+}
+
+
+.face-registration-error strong,
+.face-registration-success strong {
+  display: block;
+
+  margin-bottom: 2px;
+}
+
+
+.face-registration-error p,
+.face-registration-success p {
+  margin: 0;
+
+  color: inherit;
+  opacity: 0.85;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.face-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 15px 24px;
+
+  border-top: 1px solid #e8edf4;
+
+  background: #ffffff;
+}
+
+
+.face-camera-status {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+.camera-status-dot {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #94a3b8;
+}
+
+
+.camera-status-dot.online {
+  background: #22c55e;
+
+  box-shadow:
+    0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+
+.face-modal-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+.face-start-button,
+.face-register-button,
+.face-stop-button,
+.face-close-button {
+  border: none;
+
+  padding: 10px 16px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.face-start-button,
+.face-register-button {
+  background: #1457d9;
+
+  color: #ffffff;
+}
+
+
+.face-start-button:hover,
+.face-register-button:hover {
+  background: #0f46b4;
+}
+
+
+.face-stop-button {
+  background: #edf2f7;
+
+  color: #334155;
+}
+
+
+.face-stop-button:hover {
+  background: #e2e8f0;
+}
+
+
+.face-close-button {
+  background: #ffffff;
+
+  border: 1px solid #d8dee9;
+
+  color: #475569;
+}
+
+
+.face-close-button:hover {
+  background: #f8fafc;
+}
+
+
+.face-start-button:disabled,
+.face-register-button:disabled,
+.face-stop-button:disabled,
+.face-close-button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .face-modal-overlay {
+    padding: 12px;
+  }
+
+  .face-modal {
+    max-height: 96vh;
+
+    border-radius: 16px;
+  }
+
+  .face-modal-header {
+    padding: 18px;
+  }
+
+  .face-registration-content {
+    padding: 14px 18px 18px;
+  }
+
+  .face-employee-card {
+    margin: 14px 18px 0;
+  }
+
+  .face-account-status {
+    display: none;
+  }
+
+  .face-camera-wrapper {
+    aspect-ratio: 4 / 3;
+
+    min-height: 250px;
+  }
+
+  .registration-face-frame {
+    width: 48%;
+    height: 78%;
+  }
+
+  .face-registration-instructions {
+    grid-template-columns: 1fr;
+  }
+
+  .face-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+
+    padding: 14px 18px;
+  }
+
+  .face-camera-status {
+    justify-content: center;
+  }
+
+  .face-modal-actions {
+    width: 100%;
+  }
+
+  .face-start-button,
+  .face-register-button,
+  .face-stop-button,
+  .face-close-button {
+    flex: 1;
+  }
+
+}
+
+
+@media (max-width: 450px) {
+
+  .face-employee-meta {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 2px;
+  }
+
+  .meta-separator {
+    display: none;
+  }
+
+  .face-modal-actions {
+    flex-wrap: wrap;
+  }
+
+  .face-start-button,
+  .face-register-button,
+  .face-stop-button,
+  .face-close-button {
+    min-width: 0;
+    flex: 1 1 45%;
+  }
+
+}
+
+
+
+/* Face registration fixes for AdminDashboard.jsx */
+
+.face-registration-modal {
+  width: min(760px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.face-registration-modal .face-user-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 28px 0;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.face-registration-modal .face-user-details {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.face-registration-modal .face-user-details strong {
+  color: #172033;
+}
+
+.face-registration-modal .face-user-details span {
+  color: #64748b;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.face-registration-camera {
+  position: relative;
+  width: calc(100% - 56px);
+  height: 380px;
+  margin: 20px 28px 0;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #0f172a;
+}
+
+.face-registration-camera .camera {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #0f172a;
+}
+
+.face-registration-camera .camera.visible {
+  display: block;
+}
+
+.face-registration-camera .face-camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.face-registration-camera .face-camera-placeholder h3 {
+  margin: 10px 0 5px;
+  color: #f8fafc;
+}
+
+.face-registration-camera .face-camera-placeholder p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.face-registration-camera .camera-icon {
+  font-size: 45px;
+  color: #60a5fa;
+}
+
+.face-registration-camera .face-frame {
+  position: absolute;
+  z-index: 2;
+  top: 12%;
+  left: 29%;
+  width: 42%;
+  height: 76%;
+  border-radius: 45%;
+  pointer-events: none;
+  box-shadow: 0 0 0 999px rgba(15, 23, 42, 0.15);
+}
+
+.face-registration-camera .corner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-color: #38bdf8;
+  border-style: solid;
+}
+
+.face-registration-instructions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 28px;
+}
+
+.face-registration-instructions p {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #64748b;
+  background: #f8fafc;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.admin-success {
+  margin: 16px 28px 0;
+  padding: 12px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 9px;
+  color: #15803d;
+  background: #f0fdf4;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.face-registration-modal > .admin-error {
+  margin: 16px 28px 0;
+}
+
+.face-registration-modal .face-modal-actions {
+  margin: 20px 28px 28px;
+}
+
+@media (max-width: 700px) {
+  .face-registration-modal .face-user-info,
+  .face-registration-camera {
+    width: calc(100% - 36px);
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .face-registration-camera {
+    height: 290px;
+  }
+
+  .face-registration-instructions {
+    grid-template-columns: 1fr;
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .face-registration-modal > .admin-error,
+  .face-registration-modal > .admin-success,
+  .face-registration-modal .face-modal-actions {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+}
+
+/* =========================================================
+   APP SHELL: LOGIN / AUTHENTICATED USER
+========================================================= */
+
+#root {
+  min-height: 100vh;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logout-button {
+  border: 1px solid #cbd5e1;
+  padding: 10px 16px;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.access-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 35px 24px;
+}
+
+.access-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 38px;
+  border: 1px solid #e3e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 30px rgba(30, 50, 80, 0.06);
+  text-align: center;
+}
+
+.access-icon {
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.access-card h2 {
+  margin: 0 0 10px;
+  color: #172033;
+  font-size: 24px;
+}
+
+.access-card p {
+  max-width: 400px;
+  margin: 0 auto;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .access-card {
+    padding: 30px 22px;
+  }
+}
