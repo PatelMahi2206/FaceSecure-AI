@@ -5,13 +5,13 @@ import insightface
 print("Loading FaceSecure face model...")
 
 face_app = insightface.app.FaceAnalysis(
-    name="buffalo_l",
+    name="buffalo_s",
     providers=["CPUExecutionProvider"]
 )
 
 face_app.prepare(
-    ctx_id=0,
-    det_size=(640, 640)
+    ctx_id=-1,
+    det_size=(320, 320)
 )
 
 print("✅ Face model loaded successfully!")
