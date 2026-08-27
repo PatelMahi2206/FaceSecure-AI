@@ -22,7 +22,7 @@ from backend.app.models.user import User
 from backend.app.schemas.auth import LoginRequest, LoginResponse
 from backend.app.services.auth import create_access_token
 from backend.app.services.security import verify_password
-from backend.app.services.face_service import face_app
+from backend.app.services.face_service import get_face_app
 
 
 router = APIRouter(
@@ -155,6 +155,7 @@ async def face_login(
     image = get_image_from_upload(contents)
 
     # Detect faces and generate embeddings
+    face_app = get_face_app()
     faces = face_app.get(image)
 
     # No face detected
