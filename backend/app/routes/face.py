@@ -10,7 +10,7 @@ from backend.app.database import SessionLocal
 from backend.app.dependencies import get_current_user
 from backend.app.models.face_embedding import FaceEmbedding
 from backend.app.models.user import User
-from backend.app.services.face_service import detect_faces
+from backend.app.services.face_service import get_face_app
 
 
 router = APIRouter(
@@ -86,9 +86,7 @@ async def register_face(
 
     image = get_image_from_upload(contents)
 
-    # Detect faces directly from the decoded image
-    from backend.app.services.face_service import face_app
-
+    face_app = get_face_app()
     faces = face_app.get(image)
 
     if len(faces) == 0:
@@ -151,8 +149,7 @@ async def recognize_face(
 
     image = get_image_from_upload(contents)
 
-    from backend.app.services.face_service import face_app
-
+    face_app = get_face_app()
     faces = face_app.get(image)
 
     if len(faces) == 0:
