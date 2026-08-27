@@ -1,31 +1,20 @@
-
 import cv2
 import insightface
 from typing import Optional
 
 
-# Model will be loaded only when face detection is requested.
+# Model is NOT loaded when this module is imported.
+# It will only be loaded when get_face_app() is called.
 face_app = None
-
-
-face_app = insightface.app.FaceAnalysis(
-    name="buffalo_s",
-    providers=["CPUExecutionProvider"]
-)
-
-face_app.prepare(
-    ctx_id=-1,
-    det_size=(320, 320)
-)
 
 
 def get_face_app():
     """
     Lazily load the InsightFace model.
-6174fed (Optimize InsightFace model loading for Render)
 
-    This prevents the model from consuming memory during
-    FastAPI startup.
+    The model is loaded only when face detection/embedding
+    is actually requested. This helps FastAPI start without
+    immediately consuming the model's memory.
     """
     global face_app
 
@@ -38,11 +27,11 @@ def get_face_app():
         )
 
         face_app.prepare(
-            ctx_id=0,
+            ctx_id=-1,
             det_size=(320, 320)
         )
 
-        print("✅ Face model loaded successfully!")
+        print("Face model loaded successfully!")
 
     return face_app
 
@@ -51,7 +40,6 @@ def detect_faces(image_path: str):
     """
     Detect faces in an image.
     """
-
     image = cv2.imread(image_path)
 
     if image is None:
@@ -60,7 +48,6 @@ def detect_faces(image_path: str):
         )
 
     app = get_face_app()
-
     faces = app.get(image)
 
     return faces
@@ -74,7 +61,6 @@ def generate_embedding(image_path: str) -> Optional[list]:
         A face embedding as a Python list,
         or None if no face is detected.
     """
-
     faces = detect_faces(image_path)
 
     if not faces:
@@ -99,7 +85,7 @@ if __name__ == "__main__":
 
     faces = detect_faces(image_path)
 
-    print(f"✅ Faces detected: {len(faces)}")
+    print(f"Faces detected: {len(faces)}")
 
     for index, face in enumerate(faces, start=1):
         print(f"\nFace {index}")
