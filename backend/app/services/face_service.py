@@ -1,8 +1,12 @@
+
 import cv2
 import insightface
+from typing import Optional
 
 
-print("Loading FaceSecure face model...")
+# Model will be loaded only when face detection is requested.
+face_app = None
+
 
 face_app = insightface.app.FaceAnalysis(
     name="buffalo_s",
@@ -14,10 +18,40 @@ face_app.prepare(
     det_size=(320, 320)
 )
 
-print("✅ Face model loaded successfully!")
+
+def get_face_app():
+    """
+    Lazily load the InsightFace model.
+6174fed (Optimize InsightFace model loading for Render)
+
+    This prevents the model from consuming memory during
+    FastAPI startup.
+    """
+    global face_app
+
+    if face_app is None:
+        print("Loading FaceSecure face model...")
+
+        face_app = insightface.app.FaceAnalysis(
+            name="buffalo_sc",
+            providers=["CPUExecutionProvider"]
+        )
+
+        face_app.prepare(
+            ctx_id=0,
+            det_size=(320, 320)
+        )
+
+        print("✅ Face model loaded successfully!")
+
+    return face_app
 
 
 def detect_faces(image_path: str):
+    """
+    Detect faces in an image.
+    """
+
     image = cv2.imread(image_path)
 
     if image is None:
@@ -25,20 +59,34 @@ def detect_faces(image_path: str):
             f"Could not read image: {image_path}"
         )
 
-    faces = face_app.get(image)
+    app = get_face_app()
+
+    faces = app.get(image)
 
     return faces
 
-def generate_embedding(image_path: str):
+
+def generate_embedding(image_path: str) -> Optional[list]:
+    """
+    Generate a face embedding from the largest detected face.
+
+    Returns:
+        A face embedding as a Python list,
+        or None if no face is detected.
+    """
+
     faces = detect_faces(image_path)
 
     if not faces:
         return None
 
-    # Use the largest detected face
+    # Select the largest detected face
     face = max(
         faces,
-        key=lambda f: (f.bbox[2] - f.bbox[0]) * (f.bbox[3] - f.bbox[1])
+        key=lambda f: (
+            (f.bbox[2] - f.bbox[0]) *
+            (f.bbox[3] - f.bbox[1])
+        )
     )
 
     return face.embedding.tolist()
